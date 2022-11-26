@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Board game Records</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
+    </head>
+    <body>
+        <table class="table table-striped table-bordered table-sm">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Board game ID</th>
+                    <th>Board game Name</th>
+                    <th>Board game Email</th>
+                    <th>Board game Contact</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for board_game in board_games %}
+                    <tr>
+                        <td>{{ board_game.name }}</td>
+                        <td>{{ board_game.release_year }}</td>
+                        <td>{{ board_game.price }}</td>
+                        <td>{{ board_game.state }}</td>
+                        <td>{{ board_game.image_url }}</td>
+                        <td>{{ board_game.announce_date }}</td>
+                        <td>
+                            <a href={% url 'board_game_edit' board_game.id %}><span class="glyphicon glyphicon-pencil">Edit</span></a>
+                            <a href={% url 'board_game_delete' board_game.id %}>Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <br>
+        <center><a href="/emp" class="btn btn-primary">Add New Record</a></center>
+    </body>
+</html>
