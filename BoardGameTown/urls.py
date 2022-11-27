@@ -22,15 +22,15 @@ from MainApp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.homepage, name="homepage"),
-    path('SegundaPagina', views.segundaPagina, name='segunda'),
-    # path('accounts/', include('django.contrib.auth.urls')),
+    path('', views.BoardGameCRUD.list, name="homepage"),
     path('register/', views.register, name='register'),
     path('login/', LoginView.as_view(template_name='register/login.html', next_page=reverse_lazy("homepage")), name='login'),
     path('logout/', LogoutView.as_view(next_page=reverse_lazy('homepage')), name='logout'),
     path('board_game', views.BoardGameCRUD.form, name="board_game"),
     path('board_game/list', views.BoardGameCRUD.list, name="board_game_list"),
+    path('board_game/ads', views.BoardGameCRUD.ads, name="board_game_ads"),
     path('board_game/edit/<int:id>', views.BoardGameCRUD.edit, name="board_game_edit"),
     path('board_game/update/<int:id>', views.BoardGameCRUD.update, name="board_game_update"),
     path('board_game/delete/<int:id>', views.BoardGameCRUD.delete, name="board_game_delete"),
+    path('board_game/purchase/<int:id>', views.BoardGameCRUD.purchase, name="board_game_purchase"),
 ]

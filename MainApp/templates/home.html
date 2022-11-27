@@ -11,14 +11,7 @@
     </head>
     <body>
         {% comment %} <p>Bem vindo, insira o seu e-mail para prosseguir</p> {% endcomment %}
-        <form action="{% url 'segunda' %}">
-            Login:
-            <input type="email" name="email" id="email">
-            Senha:
-            <input type="password" name="password" id="password">
-            <input id="login-button" type='submit' value='Login'/>
-        </form>
-        <a id="go-to-login" href="{% url 'login' %}">Login</a>
+        <a id="go-to-login" href="{% url 'login' %}?next={% url 'board_game' %}">Login</a>
         <br/>
         <a id="go-to-register" href="{% url 'register' %}">Registrar</a>
     </form>

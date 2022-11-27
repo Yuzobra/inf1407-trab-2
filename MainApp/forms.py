@@ -4,4 +4,4 @@ from MainApp.models import BoardGame
 class BoardGameForm(ModelForm):
     class Meta:
         model = BoardGame
-        fields = "__all__"
+        exclude = ['announce_date', 'owner']

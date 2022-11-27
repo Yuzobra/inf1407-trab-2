@@ -9,13 +9,14 @@
         {% comment %} <link rel="stylesheet" href="{% static 'css/estilo.css' %}"> {% endcomment %}
     </head>
     <body>
-        <h1>Site Seguro</h1>
+        <h1>Board games</h1>
         <div>
-            <a href="/">Homepage</a>
+            <a href={% url 'board_game_list' %}>Homepage</a>
             {% if not user.is_authenticated %}
             | <a href="{% url 'login' %}?next={% url 'board_game' %}">Login</a>
             | <a href="{% url 'register' %}">Registrar</a>
             {% else %}
+            | <a href="{% url 'board_game_ads' %}">Meus anuncios</a>
             | <a href="{% url 'logout' %}">Logout</a>
             {% endif %}
             | Você é {% firstof user.username "visitante" %}

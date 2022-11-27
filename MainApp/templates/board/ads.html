@@ -20,12 +20,16 @@
                     <td>{{ ad.state }}</td>
                     <td>{{ ad.image_url }}</td>
                     <td>{{ ad.announce_date }}</td>
-                    <td>{{ ad.owner }}</td>
+                    <td>{{ ad.status }}</td>
                     <td>
-                        <a href={% url 'board_game_purchase' ad.id %}><span class="glyphicon glyphicon-pencil">Purchase</span></a>
+                        <a href={% url 'board_game_edit' ad.id %}><span class="glyphicon glyphicon-pencil">Edit</span></a>
+                        <a href={% url 'board_game_delete' ad.id %}>Delete</a>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    <br>
+    <br>
+    <center><a href={% url 'board_game' %} class="btn btn-primary">Add New Record</a></center>
 {% endblock %}

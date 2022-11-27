@@ -5,13 +5,8 @@ from django.shortcuts import render, redirect
 from django.urls.base import reverse_lazy
 
 from MainApp.forms import BoardGameForm
-from MainApp.models import BoardGame
-
-def homepage(req):
-    return render(req, "home.html")
-
-def segundaPagina(req):
-    return HttpResponse("Hello")
+from MainApp.models import BoardGame, Purchase
+from MainApp.controllers import get_available_ads, get_ads_from_user
 
 def register(req):
     if req.method == 'POST':
@@ -28,21 +23,28 @@ def register(req):
 class BoardGameCRUD():
     @login_required
     def form(req):
-        if req.method == "POST":  
-            form = BoardGameForm(req.POST)  
-            if form.is_valid():  
-                try:  
+        if req.method == "POST" and req.user.is_authenticated:  
+            form = BoardGameForm(req.POST)
+            if form.is_valid(): 
+                try:
+                    model_instance = form.save(commit=False)
+                    model_instance.owner_id = req.user.id
                     form.save()  
-                    return redirect(reverse_lazy("board_game_list"))  
-                except:  
-                    pass  
+                    return redirect(reverse_lazy("board_game_ads"))  
+                except Exception as e:
+                    print(e)
+                    pass
+            # else:
+            #     errors = form.errors.as_json() 
+            #     ...
         else:  
-            form = BoardGameForm()  
+            form = BoardGameForm(initial={'owner': req.user.id})  
         return render(req,'board/board_games.html',{'form':form})  
 
     def list(req):
-        board_games = BoardGame.objects.all()
-        return render(req, "board/list.html", {'board_games': board_games})
+        ads = get_available_ads(req)
+        return render(req, 'board/list.html', {'ads': ads}) 
+        
 
     @login_required
     def edit(req, id):
@@ -54,8 +56,13 @@ class BoardGameCRUD():
         board_game = BoardGame.objects.get(id=id)  
         form = BoardGameForm(req.POST, instance = board_game)  
         if form.is_valid():  
-            form.save()  
-            return redirect(reverse_lazy("list"))  
+            try:
+                form.save()
+            except Exception as e:
+                print(e)
+            return redirect(reverse_lazy("board_game_list"))  
+        else:
+            print(form.errors.as_data())
         return render(req, 'board/edit.html', {'board_game': board_game}) 
 
     @login_required
@@ -64,4 +71,21 @@ class BoardGameCRUD():
         board_game.delete()  
         return redirect(reverse_lazy("homepage"))  
 
+    @login_required
+    def ads(req):
+        ads = get_ads_from_user(req.user.id)
+        return render(req, "board/ads.html", {'ads': ads})
     
+    @login_required
+    def purchase(req, id):
+        board_game = BoardGame.objects.get(id=id)
+        purchase = Purchase(
+            buyer_id = req.user.id,
+            seller = board_game.owner,
+            game = board_game,
+        )
+
+        board_game.status = BoardGame.GameStatus.SOLD
+        board_game.save()
+        purchase.save()
+        return redirect(reverse_lazy("board_game_list"))
