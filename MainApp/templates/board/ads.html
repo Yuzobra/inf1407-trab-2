@@ -1,35 +1,40 @@
 {% extends 'base.html' %}
-{% block title %}Registro de Usuário{% endblock %}
+{% block title %}Meus anúncios{% endblock %}
 {% block content %}
-    <table class="table table-striped table-bordered table-sm">
+    <a href={% url 'board_game' %} class="btn btn-primary mb-3 ml-2">Criar anúncio</a>
+    <table class="table table-striped table-bordered table-sm text-center">
         <thead class="thead-dark">
             <tr>
-                <th>Board game ID</th>
-                <th>Board game Name</th>
-                <th>Board game Email</th>
-                <th>Board game Contact</th>
-                <th>Actions</th>
+                <th>Imagem</th>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Estado do jogo</th>
+                <th>Ano de lançamento</th>
+                <th>Data de criação do anúncio</th>
+                <th>Status do anúncio</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for ad in ads %}
                 <tr>
-                    <td>{{ ad.name }}</td>
-                    <td>{{ ad.release_year }}</td>
-                    <td>{{ ad.price }}</td>
-                    <td>{{ ad.state }}</td>
-                    <td>{{ ad.image_url }}</td>
-                    <td>{{ ad.announce_date }}</td>
-                    <td>{{ ad.status }}</td>
-                    <td>
+                    <td class="align-middle">
+                        <img height="100" src="{{ ad.image_url }}">
+                    </td>
+                    <td class="align-middle">{{ ad.name }}</td>
+                    <td class="align-middle">{{ ad.price }}</td>
+                    <td class="align-middle">{{ ad.state }}</td>
+                    <td class="align-middle">{{ ad.release_year }}</td>
+                    <td class="align-middle">{{ ad.announce_date }}</td>
+                    <td class="align-middle">{{ ad.status }}</td>
+                    {% if ad.status in 'Disponivel' %}
+                    <td class="align-middle">
                         <a href={% url 'board_game_edit' ad.id %}><span class="glyphicon glyphicon-pencil">Edit</span></a>
                         <a href={% url 'board_game_delete' ad.id %}>Delete</a>
                     </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-    <br>
-    <br>
-    <center><a href={% url 'board_game' %} class="btn btn-primary">Add New Record</a></center>
 {% endblock %}

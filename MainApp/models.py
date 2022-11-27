@@ -7,25 +7,25 @@ from django.utils.timezone import now
 
 class BoardGame(Model):
     class GameState(TextChoices):
-        NEW = 'NEW', gettext_lazy('New')
-        USED = 'USED', gettext_lazy('Used')
-        DEGRADED = 'DEGRADED', gettext_lazy('Degraded')
+        NEW = 'Novo', gettext_lazy('Novo')
+        USED = 'Usado', gettext_lazy('Usado')
+        DEGRADED = 'Degradado', gettext_lazy('Degradado')
 
     class GameStatus(TextChoices):
-        AVAILABLE = 'AVAILABLE', gettext_lazy("Available")
-        SOLD = 'SOLD', gettext_lazy('Sold')
+        AVAILABLE = 'Disponivel', gettext_lazy("Disponivel")
+        SOLD = 'Vendido', gettext_lazy('Vendido')
 
     name = CharField(max_length=100)
     release_year = IntegerField()
     price = DecimalField(decimal_places=2, max_digits=8)
-    state = CharField(max_length=8, choices=GameState.choices)
+    state = CharField(max_length=9, choices=GameState.choices)
     image_url = CharField(max_length=255)
     announce_date = DateField(default=now)
     owner = ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
     )
-    status = CharField(max_length=9, choices=GameStatus.choices, default='AVAILABLE')
+    status = CharField(max_length=10, choices=GameStatus.choices, default='DISPONIVEL')
 
 class Purchase(Model):
     game = ForeignKey(
@@ -44,7 +44,6 @@ class Purchase(Model):
     )
     timestamp = DateTimeField(default=now)
     
-
     class Meta:
         constraints = [
             CheckConstraint(name='not_same', check=~Q(buyer=F('seller')))

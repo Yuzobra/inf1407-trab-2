@@ -1,21 +1,17 @@
 {% extends 'base.html' %}
 {% block title %}Board game{% endblock %}
 {% block content %}
-    <h2>Página de gerencia de board game</h2>
+    <h3>{% firstof title "Crie o seu anúncio:" %}</h3>
     <form method="post">
         {% csrf_token %}
-        <table class="formulario">
-            {% for field in form %}
-                {% if field.name not in "announce_date,owner,status" %}
-                <tr><td>{{ field.name }}: {{ field }}</td></tr>
-                {% endif %}
-            {% endfor %}
-            <tr>
-                <td></td>
-                <td>
-                    <input type="submit" value="Criar">
-                </td>
-            </tr>
-        </table>
+        {% for field in form %}
+            {% if field.name not in "announce_date,owner,status" %}
+                <div class="ml-2">    
+                    {{ field.label }}:
+                    <div class="ml-1">{{ field }}</div>
+                </div>    
+            {% endif %}
+        {% endfor %}
+        <input class="ml-2 mt-2 btn btn-primary" type="submit" value={% firstof button "Criar" %}>
     </form>
 {% endblock %}

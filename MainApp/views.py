@@ -1,18 +1,23 @@
-from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls.base import reverse_lazy
 
 from MainApp.forms import BoardGameForm
 from MainApp.models import BoardGame, Purchase
-from MainApp.controllers import get_available_ads, get_ads_from_user
+from MainApp.controllers import get_available_ads, get_ads_from_user, get_user_purchases
 
 def register(req):
     if req.method == 'POST':
         form = UserCreationForm(req.POST)
         if form.is_valid():
-            form.save()
+            new_user = form.save()
+            new_user = authenticate(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password1'],
+            )
+            login(req, new_user)
             return redirect('homepage')
     else:
         form = UserCreationForm()
@@ -39,7 +44,7 @@ class BoardGameCRUD():
             #     ...
         else:  
             form = BoardGameForm(initial={'owner': req.user.id})  
-        return render(req,'board/board_games.html',{'form':form})  
+        return render(req,'board/board_games.html', {'form':form})  
 
     def list(req):
         ads = get_available_ads(req)
@@ -48,22 +53,25 @@ class BoardGameCRUD():
 
     @login_required
     def edit(req, id):
-        board_game = BoardGame.objects.get(id=id)
-        return render(req,'board/edit.html', {'board_game': board_game}) 
-
-    @login_required
-    def update(req, id):  
-        board_game = BoardGame.objects.get(id=id)  
-        form = BoardGameForm(req.POST, instance = board_game)  
-        if form.is_valid():  
-            try:
+        form = None
+        context = {
+            "title": "Atualize seu anúncio:",
+            "button": "Atualizar" 
+        }
+        if req.method == "POST":
+            board_game = BoardGame.objects.get(id=id)  
+            form = BoardGameForm(req.POST, instance = board_game)  
+            if form.is_valid():  
                 form.save()
-            except Exception as e:
-                print(e)
-            return redirect(reverse_lazy("board_game_list"))  
+                return redirect(reverse_lazy("board_game_list"))  
+            else:
+                print(form.errors.as_data())
+            context["form"] = form
         else:
-            print(form.errors.as_data())
-        return render(req, 'board/edit.html', {'board_game': board_game}) 
+            board_game = BoardGame.objects.get(id=id)
+            form = BoardGameForm(instance=board_game)
+            context["form"] = form
+        return render(req,'board/board_games.html', context)
 
     @login_required
     def delete(req, id):  
@@ -76,6 +84,7 @@ class BoardGameCRUD():
         ads = get_ads_from_user(req.user.id)
         return render(req, "board/ads.html", {'ads': ads})
     
+class PurchasesCRUD():
     @login_required
     def purchase(req, id):
         board_game = BoardGame.objects.get(id=id)
@@ -89,3 +98,8 @@ class BoardGameCRUD():
         board_game.save()
         purchase.save()
         return redirect(reverse_lazy("board_game_list"))
+    
+    @login_required
+    def list(req):
+        purchases = get_user_purchases(req.user.id)
+        return render(req, "board/purchases.html", {'purchases': purchases})
