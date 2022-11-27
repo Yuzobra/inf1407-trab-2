@@ -25,7 +25,7 @@ class BoardGame(Model):
         settings.AUTH_USER_MODEL,
         on_delete=CASCADE,
     )
-    status = CharField(max_length=10, choices=GameStatus.choices, default='DISPONIVEL')
+    status = CharField(max_length=10, choices=GameStatus.choices, default='Disponivel')
 
 class Purchase(Model):
     game = ForeignKey(
